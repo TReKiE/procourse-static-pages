@@ -61,7 +61,13 @@
         </div>
         <div>
           {{#if selectedItem.html}}
-            {{ace-editor content=selectedItem.html_content editorId="html|common" mode="html" autofocus="true"}}
+            <AceEditor
+              @content={{selectedItem.html_content}}
+              @onChange={{fn (mut selectedItem.html_content)}}
+              @editorId="html|common"
+              @mode="html"
+              @autofocus={{true}}
+            />
           {{else}}
             {{d-editor value=selectedItem.raw class="raw-bio"}}
           {{/if}}
