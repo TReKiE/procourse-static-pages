@@ -188,29 +188,23 @@ export default Controller.extend({
     destroy: function () {
       const item = this.get("selectedItem");
 
-      return this.dialog
-        .confirm({
-          message: I18n.t("admin.procourse_static_pages.pages.delete_confirm"),
-          cancelButtonLabel: I18n.t(
-            "admin.procourse_static_pages.pages.confirm_no"
-          ),
-          confirmButtonLabel: I18n.t(
-            "admin.procourse_static_pages.pages.confirm_yes"
-          ),
-        })
-        .then((confirmed) => {
-          if (!confirmed) {
-            return;
-          }
+      this.dialog.confirm({
+        message: I18n.t("admin.procourse_static_pages.pages.delete_confirm"),
+        cancelButtonLabel: I18n.t(
+          "admin.procourse_static_pages.pages.confirm_no"
+        ),
+        confirmButtonLabel: I18n.t(
+          "admin.procourse_static_pages.pages.confirm_yes"
+        ),
 
+        didConfirm: () => {
           if (!item.get("id")) {
             this.removeSelected();
           } else {
-            Page.destroy(this.get("selectedItem")).then(() =>
-              this.removeSelected()
-            );
+            Page.destroy(item).then(() => this.removeSelected());
           }
-        });
+        },
+      });
     },
   },
 });
