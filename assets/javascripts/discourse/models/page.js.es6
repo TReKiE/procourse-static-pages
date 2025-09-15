@@ -1,10 +1,10 @@
 import { ajax } from "discourse/lib/ajax";
-import { default as PrettyText, buildOptions } from "pretty-text/pretty-text";
+import { cook } from "discourse/lib/text";
 import Group from "discourse/models/group";
 import EmberObject, { observer } from "@ember/object";
 import { A } from "@ember/array";
 import ArrayProxy from "@ember/array/proxy";
-import { htmlSafe } from "@ember/template";
+import { isHTMLSafe } from "@ember/template";
 import { getURLWithCDN } from "discourse-common/lib/get-url";
 
 const StaticPage = EmberObject.extend({
@@ -14,13 +14,12 @@ const StaticPage = EmberObject.extend({
 });
 
 function getOpts() {
-  const siteSettings = Discourse.__container__.lookup("site-settings:main");
-
-  return buildOptions({
+  const container = Discourse.__container__;
+  return {
     getURL: getURLWithCDN,
-    currentUser: Discourse.__container__.lookup("current-user:main"),
-    siteSettings,
-  });
+    currentUser: container.lookup("current-user:main"),
+    siteSettings: container.lookup("site-settings:main"),
+  };
 }
 
 const StaticPages = ArrayProxy.extend({
@@ -65,7 +64,7 @@ StaticPage.reopenClass({
     return model;
   },
 
-  save: function (object, enabledOnly = false) {
+  save: async function (object, enabledOnly = false) {
     if (object.get("disableSave")) return;
 
     object.set("savingStatus", I18n.t("saving"));
@@ -80,11 +79,21 @@ StaticPage.reopenClass({
     if (!object || !enabledOnly) {
       let cookedStr = "";
       if (!object.html) {
-        const cooked = htmlSafe(
-          new PrettyText(getOpts()).cook(object.raw || "")
-        );
-        cookedStr = cooked && cooked.string ? cooked.string : "";
+        const maybe = cook(object.raw || "", getOpts());
+        const result = typeof maybe?.then === "function" ? await maybe : maybe;
+
+        // ensure we persist a *plain string*:
+        if (typeof result === "string") {
+          cookedStr = result;
+        } else if (isHTMLSafe?.(result)) {
+          cookedStr = result.string ?? result.toHTML?.() ?? String(result);
+        } else if (result?.toHTML) {
+          cookedStr = result.toHTML();
+        } else {
+          cookedStr = String(result ?? "");
+        }
       }
+
       data = {
         ...data,
         title: object.title,
@@ -110,7 +119,8 @@ StaticPage.reopenClass({
           result.jqXHR.responseJSON.errors &&
           result.jqXHR.responseJSON.errors[0]
         ) {
-          return bootbox.alert(result.jqXHR.responseJSON.errors[0]);
+          this.dialog.alert({ message: result.jqXHR.responseJSON.errors[0] });
+          return alert(result.jqXHR.responseJSON.errors[0]);
         }
       })
       .then(function (result) {
