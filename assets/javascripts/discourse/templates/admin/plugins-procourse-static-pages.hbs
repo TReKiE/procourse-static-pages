@@ -1,82 +1,138 @@
-{{#conditional-loading-spinner condition=model.loading}}
-<div class="customize procourse-static-pages admin admin-customize">
-  <div class="admin-container">
-    <div class='content-list span6'>
-      <h3>{{i18n 'procourse_static_pages.title'}}</h3>
-      <ul>
-      {{#each model as |page|}}
-        <li><a {{action "selectPCPage" page}} class="{{if page.selected 'active'}}">{{page.title}}</a></li>
-      {{/each}}
-      </ul>
-      {{#unless model}}
-        <p class="desc">{{i18n 'admin.procourse_static_pages.pages.no_pages'}}</p>
-      {{/unless}}
-      {{d-button class="btn"
-                 action="newPCPage"
-                 label="admin.customize.new"
-                 icon="plus"}}
-    </div>
-    {{#if selectedItem.selected}}
-    <div class="show-current-style current-style color-scheme">
-      <div class='admin-container'>
-          <h1>{{text-field class="style-name" value=selectedItem.title}}</h1>
-          <div class="controls">
-          <button {{action "save"}} disabled={{disableSave}} class='btn'>{{i18n 'admin.customize.save'}}</button>
-          <button {{action "toggleEnabled"}} disabled={{disableEnable}} class="btn">
-            {{#if selectedItem.active}}
-              {{i18n 'disable'}}
-            {{else}}
-              {{i18n 'enable'}}
+{{#conditional-loading-spinner condition=this.model.loading}}
+  <div class="customize procourse-static-pages admin admin-customize">
+    <div class="admin-container">
+      <div class="content-list span6">
+        <h3>{{i18n "procourse_static_pages.title"}}</h3>
+        <ul>
+          {{#each this.model as |page|}}
+            <li><a
+                {{on "click" (fn this.onSelectPCPage page)}}
+                class="{{if page.selected 'active'}}"
+              >{{page.title}}</a></li>
+          {{/each}}
+        </ul>
+        {{#unless this.model.length}}
+          <p class="desc">{{i18n
+              "admin.procourse_static_pages.pages.no_pages"
+            }}</p>
+        {{/unless}}
+        {{d-button
+          class="btn"
+          action=this.newPCPage
+          label="admin.customize.new"
+          icon="plus"
+        }}
+      </div>
+      {{#if this.selectedItem.selected}}
+        <div class="show-current-style current-style color-scheme">
+          <div class="admin-container">
+            <h1>{{text-field
+                class="style-name"
+                value=this.selectedItem.title
+              }}</h1>
+            <div class="controls">
+              <button
+                {{on "click" this.onSave}}
+                disabled={{this.disableSave}}
+                class="btn"
+              >{{i18n "admin.customize.save"}}</button>
+              <button
+                {{on "click" this.onToggle}}
+                disabled={{this.disableEnable}}
+                class="btn"
+              >
+                {{#if this.selectedItem.active}}
+                  {{i18n "disable"}}
+                {{else}}
+                  {{i18n "enable"}}
+                {{/if}}
+              </button>
+              <button {{on "click" this.onCopy}} class="btn">{{d-icon "copy"}}
+                {{i18n "admin.customize.copy"}}</button>
+              <button
+                {{on "click" this.onDestroy}}
+                class="btn btn-danger"
+              >{{d-icon "trash"}}
+                {{i18n "admin.customize.delete"}}</button>
+              <span
+                class="saving
+                  {{unless this.selectedItem.savingStatus 'hidden'}}"
+              >{{this.selectedItem.savingStatus}}</span>
+            </div>
+          </div>
+          <br />
+          <form class="form-horizontal">
+            {{#if this.selectedItem.id}}
+              <div>
+                <label>{{i18n "admin.procourse_static_pages.pages.id"}}:
+                  {{this.selectedItem.id}}</label>
+                <p class="help">{{i18n
+                    "admin.procourse_static_pages.pages.page_url_description"
+                  }}:
+                  <a
+                    target="_blank"
+                    href="{{this.pageURL}}{{this.selectedItem.slug}}/{{this.selectedItem.id}}/"
+                  >{{this.pageURL}}{{this.selectedItem.slug}}/{{this.selectedItem.id}}/</a></p>
+              </div>
             {{/if}}
-          </button>
-          <button {{action "copy" selectedItem}} class='btn'>{{d-icon 'copy'}} {{i18n 'admin.customize.copy'}}</button>
-          <button {{action "destroy"}} class='btn btn-danger'>{{d-icon 'trash'}} {{i18n 'admin.customize.delete'}}</button>
-          <span class="saving {{unless selectedItem.savingStatus 'hidden'}}">{{selectedItem.savingStatus}}</span>
+            <div>
+              <label>{{i18n "admin.procourse_static_pages.pages.slug"}}</label>
+              {{text-field
+                class="style-name"
+                value=this.selectedItem.slug
+                enter=this.editSlug
+              }}
+              <p class="help">{{i18n
+                  "admin.procourse_static_pages.pages.slug_description"
+                }}</p>
+            </div>
+            <div>
+              <label>{{i18n
+                  "admin.procourse_static_pages.pages.limit_group"
+                }}</label>
+              {{combo-box
+                content=this.customGroups
+                valueAttribute="id"
+                value=this.selectedItem.group
+                none="admin.procourse_static_pages.groups.bulk_select"
+              }}
+              <p class="help">{{i18n
+                  "admin.procourse_static_pages.pages.limit_group_description"
+                }}</p>
+            </div>
+            <div>
+              <label>
+                {{input
+                  type="checkbox"
+                  name="html"
+                  checked=this.selectedItem.html
+                }}
+                {{i18n "admin.procourse_static_pages.pages.html"}}
+              </label>
+              <p class="help">{{i18n
+                  "admin.procourse_static_pages.pages.html_description"
+                }}</p>
+            </div>
+            <div>
+              {{#if this.selectedItem.html}}
+                <AceEditor
+                  @content={{this.selectedItem.html_content}}
+                  @onChange={{fn (mut this.selectedItem.html_content)}}
+                  @editorId="html|common"
+                  @mode="html"
+                  @autofocus={{true}}
+                />
+              {{else}}
+                {{d-editor value=this.selectedItem.raw class="raw-bio"}}
+              {{/if}}
+            </div>
+          </form>
         </div>
-        </div>
-        <br>
-        <form class="form-horizontal">
-        {{#if selectedItem.id}}
-        <div>
-          <label>{{i18n 'admin.procourse_static_pages.pages.id'}}: {{ selectedItem.id }}</label>
-          <p class="help">{{i18n 'admin.procourse_static_pages.pages.page_url_description'}}: <a target="_blank" href="{{pageURL}}{{selectedItem.slug}}/{{selectedItem.id}}/">{{pageURL}}{{selectedItem.slug}}/{{selectedItem.id}}/</a></p>
-        </div>
-        {{/if}}
-        <div>
-          <label>{{i18n 'admin.procourse_static_pages.pages.slug'}}</label>
-          {{text-field class="style-name" value=selectedItem.slug enter=editSlug}}
-          <p class="help">{{i18n 'admin.procourse_static_pages.pages.slug_description'}}</p>
-        </div>
-        <div>
-          <label>{{i18n 'admin.procourse_static_pages.pages.limit_group'}}</label>
-          {{combo-box content=customGroups valueAttribute="id" value=selectedItem.group none="admin.procourse_static_pages.groups.bulk_select"}}
-          <p class="help">{{i18n 'admin.procourse_static_pages.pages.limit_group_description'}}</p>
-        </div>
-        <div>
-          <label>
-            {{input type="checkbox" name="html" checked=selectedItem.html}}
-            {{i18n 'admin.procourse_static_pages.pages.html'}}
-          </label>
-          <p class="help">{{i18n 'admin.procourse_static_pages.pages.html_description'}}</p>
-        </div>
-        <div>
-          {{#if selectedItem.html}}
-            <AceEditor
-              @content={{selectedItem.html_content}}
-              @onChange={{fn (mut selectedItem.html_content)}}
-              @editorId="html|common"
-              @mode="html"
-              @autofocus={{true}}
-            />
-          {{else}}
-            {{d-editor value=selectedItem.raw class="raw-bio"}}
-          {{/if}}
-        </div>
-        </form>
+      {{else}}
+        <div class="current-style color-scheme badges">{{i18n
+            "admin.procourse_static_pages.pages.no_page_selected"
+          }}</div>
+      {{/if}}
     </div>
-    {{else}}
-      <div class="current-style color-scheme badges">{{i18n 'admin.procourse_static_pages.pages.no_page_selected'}}</div>
-    {{/if}}
   </div>
-</div>
 {{/conditional-loading-spinner}}

@@ -4,6 +4,17 @@ import EmberObject, { observer, computed } from "@ember/object";
 import { service } from "@ember/service";
 
 export default Controller.extend({
+  init() {
+    this._super(...arguments);
+    // Handlers for template usage
+    this.onSelectPCPage = (page) => this.send("selectPCPage", page);
+    this.onNewPCPage = () => this.send("newPCPage");
+    this.onSave = () => this.send("save");
+    this.onToggle = () => this.send("toggleEnabled");
+    this.onCopy = () => this.send("copy", this.get("selectedItem"));
+    this.onDestroy = () => this.send("destroy");
+  },
+
   pageURL: document.location.origin + "/page/",
 
   basePCPage: computed("model.@each.id", function () {
