@@ -135,17 +135,31 @@ export default Controller.extend({
       this.set('disableSave', false);
     },
 
-    destroy: function() {
-      var self = this,
-          item = self.get('selectedItem');
+    destroy: function () {
+      const item = this.get("selectedItem");
+      const dialog = getOwner(this).lookup("service:dialog");
 
-      return bootbox.confirm(I18n.t("admin.procourse_static_pages.pages.delete_confirm"), I18n.t("no_value"), I18n.t("yes_value"), function(result) {
-        if (result) {
-          if (!item.get('id')) {
-            self.removeSelected();
-          } else {
-            Page.destroy(self.get('selectedItem')).then(function(){ self.removeSelected(); });
+      return dialog
+        .confirm({
+          message: I18n.t("admin.procourse_static_pages.pages.delete_confirm"),
+          cancelButtonLabel: I18n.t(
+            "admin.procourse_static_pages.common.confirm_no"
+          ),
+          confirmButtonLabel: I18n.t(
+            "admin.procourse_static_pages.common.confirm_yes"
+          ),
+        })
+        .then((confirmed) => {
+          if (!confirmed) {
+            return;
           }
+
+          if (!item.get("id")) {
+            this.removeSelected();
+          } else {
+            Page.destroy(this.get("selectedItem")).then(() =>
+              this.removeSelected()
+            );
         }
       });
     }
