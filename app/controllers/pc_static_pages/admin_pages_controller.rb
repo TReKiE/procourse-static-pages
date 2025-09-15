@@ -1,37 +1,37 @@
 module PcStaticPages
   class AdminPagesController < Admin::AdminController
-    requires_plugin 'procourse-static-pages'
+    requires_plugin "procourse-static-pages"
 
     def create
-      pages = PluginStoreRow.where(plugin_name: "procourse_static_pages")
-        .where("key LIKE 'p:%'")
-        .where("key != 'p:id'")
+      pages =
+        PluginStoreRow
+          .where(plugin_name: "procourse_static_pages")
+          .where("key LIKE 'p:%'")
+          .where("key != 'p:id'")
 
-        id = PluginStore.get("procourse_static_pages", "p:id") || 1
+      id = PluginStore.get("procourse_static_pages", "p:id") || 1
 
-        new_page = {
-          id: id,
-          active: params[:page][:active],
-          title: params[:page][:title],
-          slug: params[:page][:slug],
-          group: params[:page][:group],
-          raw: params[:page][:raw],
-          cooked: params[:page][:cooked],
-          custom_slug: params[:page][:custom_slug],
-          html: params[:page][:html],
-          html_content: params[:page][:html_content]
-        }
-        PluginStore.set("procourse_static_pages", "p:" + id.to_s, new_page)
-        PluginStore.set("procourse_static_pages", "p:id", (id.to_i + 1).to_s)
+      new_page = {
+        id: id,
+        active: params[:page][:active],
+        title: params[:page][:title],
+        slug: params[:page][:slug],
+        group: params[:page][:group],
+        raw: params[:page][:raw],
+        cooked: params[:page][:cooked],
+        custom_slug: params[:page][:custom_slug],
+        html: params[:page][:html],
+        html_content: params[:page][:html_content],
+      }
+      PluginStore.set("procourse_static_pages", "p:" + id.to_s, new_page)
+      PluginStore.set("procourse_static_pages", "p:id", (id.to_i + 1).to_s)
 
-        render json: new_page, root: false
+      render json: new_page, root: false
     end
 
     def update
       page = PluginStore.get("procourse_static_pages", "p:" + params[:page][:id].to_s)
-      if page.is_a? String
-        page = eval(page)
-      end
+      page = eval(page) if page.is_a? String
 
       if page.nil?
         render_json_error(page)
@@ -53,29 +53,32 @@ module PcStaticPages
     end
 
     def destroy
-      page = PluginStoreRow.find_by(:key => "p:" + params[:page][:id].to_s)
-
-      if page
-        page.destroy
-        render json: success_json
+      id = params.dig(:page, :id)
+      key = "p:#{id}"
+      if PluginStore.get("procourse_static_pages", key)
+        PluginStore.remove("procourse_static_pages", key) # cleaner than AR delete
+        render_json_dump(success_json)
       else
-        render_json_error(page)
+        render_json_error(key)
       end
     end
 
     def show
-      pages = PluginStoreRow.where(plugin_name: "procourse_static_pages")
-        .where("key LIKE 'p:%'")
-        .where("key != 'p:id'")
+      rows =
+        PluginStoreRow
+          .where(plugin_name: "procourse_static_pages")
+          .where("key LIKE 'p:%'")
+          .where.not(key: "p:id")
+      pages = rows.map { |row| PluginStore.get("procourse_static_pages", row.key) }
       render_json_dump(pages)
     end
-
 
     private
 
     def page_params
-      params.permit(page: [:active, :title, :slug, :group, :raw, :cooked, :custom_slug, :html, :html_content])[:page]
+      params.permit(page: %i[active title slug group raw cooked custom_slug html html_content])[
+        :page
+      ]
     end
-
   end
 end
