@@ -1,20 +1,26 @@
 .procourse-static-pages.customize {
-  .current-style{
+  .current-style {
     margin-left: 20px;
     float: left;
     width: 70%;
   }
 }
+
 .procourse-static-pages {
-  .help{
+  .help {
     color: #919191;
     padding-top: 3px;
     font-size: 85%;
     line-height: 1.4em;
-    margin: 0px 0px 20px 0px;
+    margin: 0 0 20px 0;
     font-weight: normal;
   }
-  .d-editor-textarea-wrapper{
-    min-height:400px;
+
+  .d-editor-textarea-wrapper {
+    min-height: 400px;
+  }
+
+  div.pcsp-ace > div.ace-wrapper {
+    min-height: 240px;
   }
 }
