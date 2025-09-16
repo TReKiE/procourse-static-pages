@@ -13,5 +13,7 @@ nl:
           delete_confirm: "Verwijder deze pagina?"
           no_pages: "Voeg pagina's toe voor je gebruikers."
           no_page_selected: "Geen pagina geselecteerd."
+          confirm_yes: "Ja"
+          confirm_no: "Nee"
     procourse_static_pages:
       title: "Statische Pagina's"

@@ -190,12 +190,8 @@ export default Controller.extend({
 
       this.dialog.confirm({
         message: I18n.t("admin.procourse_static_pages.pages.delete_confirm"),
-        cancelButtonLabel: I18n.t(
-          "admin.procourse_static_pages.pages.confirm_no"
-        ),
-        confirmButtonLabel: I18n.t(
-          "admin.procourse_static_pages.pages.confirm_yes"
-        ),
+        cancelButtonLabel: "admin.procourse_static_pages.pages.confirm_no",
+        confirmButtonLabel: "admin.procourse_static_pages.pages.confirm_yes",
 
         didConfirm: () => {
           if (!item.get("id")) {
