@@ -13,5 +13,7 @@ zh_CN:
           delete_confirm: "删除这个页面？"
           no_pages: "为您的用户添加一些页面。"
           no_page_selected: "没有选择的页面。"
+          confirm_yes: "确定"
+          confirm_no: "取消"
     procourse_static_pages:
       title: "静态页面"

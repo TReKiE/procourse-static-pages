@@ -13,5 +13,7 @@ fr:
           delete_confirm: "Supprimer cette page ?"
           no_pages: "Ajoutez des pages pour vos utilisateurs."
           no_page_selected: "Aucune page sélectionnée."
+          confirm_yes: "Oui"
+          confirm_no: "Non"
     procourse_static_pages:
       title: "Pages statiqes"

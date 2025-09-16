@@ -15,6 +15,8 @@ en:
           no_page_selected: "No page selected."
           limit_group: "Security"
           limit_group_description: "Select the group allowed to see this page"
+          confirm_yes: "Yes"
+          confirm_no: "No"
         groups:
           bulk_select: "Select a group"
     procourse_static_pages:
