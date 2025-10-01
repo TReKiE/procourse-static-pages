@@ -19,5 +19,6 @@ en:
           confirm_no: "No"
         groups:
           bulk_select: "Select a group"
+          clear: "Clear"
     procourse_static_pages:
       title: "Static Pages"

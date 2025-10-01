@@ -153,9 +153,7 @@ StaticPage.reopenClass({
   },
 
   customGroups: function () {
-    return Group.findAll().then((groups) => {
-      return groups.filter((g) => !g.get("automatic"));
-    });
+    return Group.findAll();
   },
 });
 
