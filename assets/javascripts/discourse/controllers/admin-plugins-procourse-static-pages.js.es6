@@ -2,6 +2,7 @@ import Page from "../models/page";
 import Controller from "@ember/controller";
 import EmberObject, { observer, computed } from "@ember/object";
 import { service } from "@ember/service";
+import { action } from "@ember/object";
 
 export default Controller.extend({
   init() {
@@ -28,6 +29,10 @@ export default Controller.extend({
     this.get("model").removeObject(this.get("selectedItem"));
     this.set("selectedItem", null);
   },
+
+  clearLimitGroup: action(function () {
+    this.get("selectedItem")?.set("group", null);
+  }),
 
   editTitle: observer("selectedItem.title", function () {
     this.set("editingTitle", true);

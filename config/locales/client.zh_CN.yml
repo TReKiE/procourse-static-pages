@@ -15,5 +15,8 @@ zh_CN:
           no_page_selected: "没有选择的页面。"
           confirm_yes: "确定"
           confirm_no: "取消"
+        groups:
+          bulk_select: "选择一个组"
+          clear: "清除选择"
     procourse_static_pages:
       title: "静态页面"

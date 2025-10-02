@@ -15,5 +15,8 @@ nl:
           no_page_selected: "Geen pagina geselecteerd."
           confirm_yes: "Ja"
           confirm_no: "Nee"
+        groups:
+          bulk_select: "Selecteer een groep"
+          clear: "Selectie wissen"
     procourse_static_pages:
       title: "Statische Pagina's"

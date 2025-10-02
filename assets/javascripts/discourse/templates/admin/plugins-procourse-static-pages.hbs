@@ -97,6 +97,14 @@
                 value=this.selectedItem.group
                 none="admin.procourse_static_pages.groups.bulk_select"
               }}
+              {{#if this.selectedItem.group}}
+                <DButton
+                  @class="btn-link clear-group-btn"
+                  @icon="xmark"
+                  @title="admin.procourse_static_pages.groups.clear"
+                  @action={{this.clearLimitGroup}}
+                />
+              {{/if}}
               <p class="help">{{i18n
                   "admin.procourse_static_pages.pages.limit_group_description"
                 }}</p>

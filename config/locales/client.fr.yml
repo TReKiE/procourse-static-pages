@@ -15,5 +15,8 @@ fr:
           no_page_selected: "Aucune page sélectionnée."
           confirm_yes: "Oui"
           confirm_no: "Non"
+        groups:
+          bulk_select: "Sélectionner un groupe"
+          clear: "Réinitialiser"
     procourse_static_pages:
       title: "Pages statiqes"
